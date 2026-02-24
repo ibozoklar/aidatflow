@@ -38,6 +38,10 @@ public class DueService {
         return dueRepository.findByApartmentIdOrderByDueDateDesc(apartmentId);
     }
 
+    public List<Payment> listPayments(Long dueId) {
+        return paymentRepository.findByDueIdOrderByPaidAtDesc(dueId);
+    }
+
     @Transactional
     public Payment registerPayment(Long dueId, CreatePaymentRequest request) {
         Due due = dueRepository.findById(dueId)

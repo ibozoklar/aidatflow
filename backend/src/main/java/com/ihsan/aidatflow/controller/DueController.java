@@ -29,6 +29,11 @@ public class DueController {
         return dueService.listApartmentDues(apartmentId);
     }
 
+    @GetMapping("/{dueId}/payments")
+    public List<Payment> listPayments(@PathVariable Long dueId) {
+        return dueService.listPayments(dueId);
+    }
+
     @PostMapping("/{dueId}/payments")
     public Payment createPayment(@PathVariable Long dueId, @Valid @RequestBody CreatePaymentRequest request) {
         return dueService.registerPayment(dueId, request);
