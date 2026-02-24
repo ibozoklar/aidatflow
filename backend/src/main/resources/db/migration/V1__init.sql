@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS app_user (
+    id BIGSERIAL PRIMARY KEY,
+    full_name VARCHAR(120) NOT NULL,
+    email VARCHAR(180) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(30) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS apartment (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(120) NOT NULL,
+    address TEXT,
+    unit_count INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);

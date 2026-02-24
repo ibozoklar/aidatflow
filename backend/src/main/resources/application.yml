@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: aidatflow-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aidatflow
+    username: aidatflow
+    password: aidatflow
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  flyway:
+    enabled: true
+
+app:
+  jwt:
+    secret: 01234567890123456789012345678901
+    expiry-ms: 86400000
+
+server:
+  port: 8080

@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS due (
+    id BIGSERIAL PRIMARY KEY,
+    apartment_id BIGINT NOT NULL REFERENCES apartment(id),
+    period VARCHAR(7) NOT NULL,
+    amount NUMERIC(12,2) NOT NULL,
+    due_date DATE NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS payment (
+    id BIGSERIAL PRIMARY KEY,
+    due_id BIGINT NOT NULL REFERENCES due(id),
+    amount NUMERIC(12,2) NOT NULL,
+    method VARCHAR(30) NOT NULL,
+    note VARCHAR(255),
+    paid_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
