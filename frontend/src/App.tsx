@@ -42,6 +42,8 @@ function App() {
   const [password, setPassword] = useState('123456')
   const [token, setToken] = useState(localStorage.getItem('aidatflow_token') || '')
 
+  const authHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
+
   const [period, setPeriod] = useState('2026-03')
   const [amount, setAmount] = useState('1200')
   const [dueDate, setDueDate] = useState('2026-03-10')
@@ -54,8 +56,8 @@ function App() {
     setLoading(true)
     try {
       const [duesRes, summaryRes] = await Promise.all([
-        fetch(`${API}/dues/apartment/${id}`),
-        fetch(`${API}/dashboard/summary?apartmentId=${id}`),
+        fetch(`${API}/dues/apartment/${id}`, { headers: authHeaders }),
+        fetch(`${API}/dashboard/summary?apartmentId=${id}`, { headers: authHeaders }),
       ])
       if (!duesRes.ok) throw new Error('Aidatlar alınamadı')
       if (!summaryRes.ok) throw new Error('Özet alınamadı')
@@ -79,7 +81,7 @@ function App() {
       setPayments([])
       return
     }
-    const res = await fetch(`${API}/dues/${dueId}/payments`)
+    const res = await fetch(`${API}/dues/${dueId}/payments`, { headers: authHeaders })
     if (!res.ok) return
     setPayments(await res.json())
   }
@@ -122,7 +124,7 @@ function App() {
     e.preventDefault()
     const r = await fetch(`${API}/dues`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
       body: JSON.stringify({ apartmentId, period, amount: Number(amount), dueDate }),
     })
     if (!r.ok) return alert('Aidat oluşturulamadı')
@@ -134,7 +136,7 @@ function App() {
     if (!paymentDueId) return
     const r = await fetch(`${API}/dues/${paymentDueId}/payments`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
       body: JSON.stringify({ amount: Number(paymentAmount), method: paymentMethod, note: 'UI ödeme' }),
     })
     if (!r.ok) return alert('Ödeme kaydedilemedi')
@@ -165,6 +167,8 @@ function App() {
         </form>
         <small>Token: {token ? `${token.slice(0, 25)}...` : 'yok'}</small>
       </section>
+
+      {!token && <div style={{padding:10,background:'#fff3cd',border:'1px solid #ffe69c',borderRadius:8,marginBottom:12}}>Önce login olmalısın. API endpointleri artık JWT korumalı.</div>}
 
       <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 18 }}>
         <Card title='Toplam Borç' value={summary?.totalDueAmount ?? 0} />

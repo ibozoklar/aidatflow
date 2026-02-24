@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import com.ihsan.aidatflow.config.JwtAuthenticationFilter;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -28,6 +29,7 @@ class DashboardControllerTest {
 
     @MockBean DueService dueService;
     @MockBean PaymentRepository paymentRepository;
+    @MockBean JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Test
     void summary_returnsAggregates() throws Exception {
