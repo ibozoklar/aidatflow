@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.doThrow;
 
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -49,5 +50,16 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(new LoginRequest("ihsan@example.com", "123456"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").value("tkn2"));
+    }
+
+    @Test
+    void register_existingEmail_returnsConflict() throws Exception {
+        doThrow(new IllegalArgumentException("Email already exists")).when(authService).register(any());
+
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new RegisterRequest("Ihsan", "ihsan@example.com", "123456"))))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Email already exists"));
     }
 }

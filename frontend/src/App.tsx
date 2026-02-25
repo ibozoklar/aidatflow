@@ -41,6 +41,7 @@ function App() {
   const [email, setEmail] = useState('ihsan@example.com')
   const [password, setPassword] = useState('123456')
   const [token, setToken] = useState(localStorage.getItem('aidatflow_token') || '')
+  const [authMessage, setAuthMessage] = useState('')
 
   const authHeaders: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
 
@@ -90,34 +91,37 @@ function App() {
     loadDuesAndSummary(apartmentId)
   }, [])
 
-  async function onRegister(e: FormEvent) {
-    e.preventDefault()
+  async function onRegister() {
+    setAuthMessage('')
     const res = await fetch(`${API}/auth/register`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fullName: 'Ihsan', email, password }),
     })
+    const data = await res.json().catch(() => ({}))
     if (!res.ok) {
-      alert('Register başarısız (muhtemelen kullanıcı var). Login dene.')
+      setAuthMessage(data.message || 'Register başarısız')
       return
     }
-    const data = await res.json()
     localStorage.setItem('aidatflow_token', data.accessToken)
     setToken(data.accessToken)
+    setAuthMessage('Kayıt başarılı ve giriş yapıldı')
   }
 
   async function onLogin(e: FormEvent) {
     e.preventDefault()
+    setAuthMessage('')
     const res = await fetch(`${API}/auth/login`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     })
+    const data = await res.json().catch(() => ({}))
     if (!res.ok) {
-      alert('Login başarısız')
+      setAuthMessage(data.message || 'Login başarısız')
       return
     }
-    const data = await res.json()
     localStorage.setItem('aidatflow_token', data.accessToken)
     setToken(data.accessToken)
+    setAuthMessage('Login başarılı')
   }
 
   async function onCreateDue(e: FormEvent) {
@@ -162,9 +166,10 @@ function App() {
         <form onSubmit={onLogin} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 8 }}>
           <input value={email} onChange={e => setEmail(e.target.value)} placeholder='email' />
           <input value={password} onChange={e => setPassword(e.target.value)} placeholder='password' type='password' />
-          <button type='button' onClick={(e) => onRegister(e as any)}>Register</button>
+          <button type='button' onClick={onRegister}>Register</button>
           <button type='submit'>Login</button>
         </form>
+        {authMessage && <div style={{ marginTop: 8, color: authMessage.toLowerCase().includes('başar') ? '#166534' : '#b91c1c' }}>{authMessage}</div>}
         <small>Token: {token ? `${token.slice(0, 25)}...` : 'yok'}</small>
       </section>
 
